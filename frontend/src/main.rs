@@ -60,7 +60,7 @@ fn index() -> Template {
         //        "colorapp-backend-service".to_string()
         //    },
         //};
-        //let backend_port = match std::env::var("backend_host") {
+        //let backend_port = match std::env::var("backend_port") {
         //    Ok(resp) => resp,
         //    Err(e) => {
         //        println!("{}", e);
@@ -71,7 +71,8 @@ fn index() -> Template {
     let backend_host="colorapp-backend-service".to_string();
     let backend_port="8000".to_string();
 
-    let url = format!("http://{}:{}/color", backend_host, backend_port);
+    //let url = format!("http://{}:{}/color", backend_host, backend_port);
+    let url = "http://colorapp-backend-service:8000/color".to_string();
 
     let resp = reqwest::blocking::get(&url).unwrap()
         .json::<HashMap<String, String>>().unwrap();
@@ -116,7 +117,7 @@ fn read_stats<'a>(color_counter_wrapper: Arc<Mutex<ColorCount>>) -> () {
         //        "colorapp-backend-service".to_string()
         //    },
         //};
-        //let backend_port = match std::env::var("backend_host") {
+        //let backend_port = match std::env::var("backend_port") {
         //    Ok(resp) => resp,
         //    Err(e) => {
         //        println!("{}", e);
@@ -127,8 +128,8 @@ fn read_stats<'a>(color_counter_wrapper: Arc<Mutex<ColorCount>>) -> () {
         let backend_host="colorapp-backend-service".to_string();
         let backend_port="8000".to_string();
     
-        let url = format!("http://{}:{}/color", backend_host, backend_port);
-
+        //let url = format!("http://{}:{}/color", backend_host, backend_port);
+        let url = "http://colorapp-backend-service:8000/color".to_string();
 
         for _ in 0..100 {
             let resp_result = reqwest::blocking::get(&url);
