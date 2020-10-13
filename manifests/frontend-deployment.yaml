@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/part-of: colorapp
     app.kubernetes.io/version: v1.0.6
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: colorapp-frontend
-        image: quay.io/mariusdieckmann/colorapp-frontend:v1.0.7-debug-2
+        image: quay.io/mariusdieckmann/colorapp-frontend:v1.0.8
         ports:
         - containerPort: 8000
         env:
@@ -28,8 +28,6 @@ spec:
             value: colorapp-backend-service
           - name: backend_port
             value: "8000"
-          - name: RUST_BACKTRACE
-            value: full
 ---
 apiVersion: v1
 kind: Service
@@ -52,7 +50,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: color-frontend.demofoo.134.176.27.253.xip.io
+  - host: color-frontend.demofoo.134.176.27.253.nip.io
     http:
       paths:
       - path: /

@@ -53,26 +53,23 @@ fn main() {
 /// returns a blank site with the background color set to the color returned by the backend
 #[get("/")]
 fn index() -> Template {
-        //let backend_host = match std::env::var("backend_host") {
-        //    Ok(resp) => resp,
-        //    Err(e) => {
-        //        println!("{}", e);
-        //        "colorapp-backend-service".to_string()
-        //    },
-        //};
-        //let backend_port = match std::env::var("backend_port") {
-        //    Ok(resp) => resp,
-        //    Err(e) => {
-        //        println!("{}", e);
-        //        "8000".to_string()
-        //    },
-        //};
+    let backend_host = match std::env::var("backend_host") {
+        Ok(resp) => resp,
+        Err(e) => {
+            println!("{}", e);
+            "localhost".to_string()
+        },
+    };
+    let backend_port = match std::env::var("backend_port") {
+        Ok(resp) => resp,
+        Err(e) => {
+            println!("{}", e);
+            "8001".to_string()
+        },
+    };
     
-    let backend_host="colorapp-backend-service".to_string();
-    let backend_port="8000".to_string();
 
-    //let url = format!("http://{}:{}/color", backend_host, backend_port);
-    let url = "http://colorapp-backend-service:8000/color".to_string();
+    let url = format!("http://{}:{}/color", backend_host, backend_port);
 
     let resp = reqwest::blocking::get(&url).unwrap()
         .json::<HashMap<String, String>>().unwrap();
@@ -110,32 +107,30 @@ fn read_stats<'a>(color_counter_wrapper: Arc<Mutex<ColorCount>>) -> () {
         let mut color_green = 0i64;
         let mut error_counter = 0i64;
 
-        //let backend_host = match std::env::var("backend_host") {
-        //    Ok(resp) => resp,
-        //    Err(e) => {
-        //        println!("{}", e);
-        //        "colorapp-backend-service".to_string()
-        //    },
-        //};
-        //let backend_port = match std::env::var("backend_port") {
-        //    Ok(resp) => resp,
-        //    Err(e) => {
-        //        println!("{}", e);
-        //        "8000".to_string()
-        //    },
-        //};
-
-        let backend_host="colorapp-backend-service".to_string();
-        let backend_port="8000".to_string();
+        let backend_host = match std::env::var("backend_host") {
+            Ok(resp) => resp,
+            Err(e) => {
+                println!("{}", e);
+                "localhost".to_string()
+            },
+        };
+        let backend_port = match std::env::var("backend_port") {
+            Ok(resp) => resp,
+            Err(e) => {
+                println!("{}", e);
+                "8001".to_string()
+            },
+        };
+        
     
-        //let url = format!("http://{}:{}/color", backend_host, backend_port);
-        let url = "http://colorapp-backend-service:8000/color".to_string();
+        let url = format!("http://{}:{}/color", backend_host, backend_port);
 
         for _ in 0..100 {
             let resp_result = reqwest::blocking::get(&url);
             let resp = match resp_result {
                 Ok(resp) => resp,
                 Err(e) => {
+                    println!("{}", e);
                     error_counter = error_counter + 1i64;
                     continue;
                 },
@@ -144,6 +139,7 @@ fn read_stats<'a>(color_counter_wrapper: Arc<Mutex<ColorCount>>) -> () {
             let json_resp = match json_resp_result {
                 Ok(json_resp) => json_resp,
                 Err(e) => {
+                    println!("{}", e);
                     error_counter = error_counter + 1i64;
                     continue;
                 },

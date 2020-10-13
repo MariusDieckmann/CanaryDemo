@@ -1,21 +1,26 @@
-FROM rustlang/rust:nightly-alpine AS builder
+FROM rustlang/rust:nightly AS builder
 
-
-RUN apk update
-RUN apk add build-base
-RUN apk add openssl-dev
+RUN apt-get -y update
+RUN apt-get -y upgrade
+RUN apt-get install build-essential zlib1g-dev -y
 
 WORKDIR /app_build
 
-COPY . .
-RUN cargo build
+COPY src src
+COPY static static
+COPY templates templates
+COPY Cargo.toml .
+
+RUN cargo build --release
+RUN ls target
 
 FROM ubuntu
 RUN apt-get -y update
 RUN apt-get -y upgrade
+RUN apt-get -y install libssl-dev
 
 WORKDIR /app
-COPY --from=builder /app_build/target/debug/color-frontend .
-COPY templates .
-COPY static .
+COPY --from=builder /app_build/target/release/color-frontend .
+COPY templates templates
+COPY static static
 CMD ["/app/color-frontend"]

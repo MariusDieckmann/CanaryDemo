@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/part-of: colorapp
     app.kubernetes.io/version: v1.0.0
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -45,7 +45,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: color-backend.demofoo.134.176.27.253.xip.io
+  - host: color-backend.demofoo.134.176.27.253.nip.io
     http:
       paths:
       - path: /
