@@ -12,7 +12,6 @@ COPY templates templates
 COPY Cargo.toml .
 
 RUN cargo build --release
-RUN ls target
 
 FROM ubuntu
 RUN apt-get -y update
