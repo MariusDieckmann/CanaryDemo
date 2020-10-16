@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: colorapp-frontend-deployment
+  name: colorapp-frontend
   labels:
     app.kubernetes.io/name: frontend
     app.kubernetes.io/part-of: colorapp
-    app.kubernetes.io/version: v1.0.9
+    app.kubernetes.io/version: v1.0.10
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: frontend
-      version: v1.0.9
+      version: v1.0.10
   template:
     metadata:
       labels:
         app: frontend
-        version: v1.0.9
+        version: v1.0.10
     spec:
       containers:
       - name: colorapp-frontend
-        image: quay.io/mariusdieckmann/colorapp-frontend:v1.0.9
+        image: quay.io/mariusdieckmann/colorapp-frontend:v1.0.10
         ports:
         - containerPort: 8000
         env:
@@ -32,11 +32,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: colorapp-frontend-service
+  name: colorapp-frontend
 spec:
   selector:
     app: frontend
-    version: v1.0.9
+    version: v1.0.10
   ports:
     - protocol: TCP
       port: 8000

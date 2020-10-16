@@ -6,10 +6,10 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: example.com
+  - host: colorapp.ingress.rancher2.computational.bio
     http:
       paths:
       - path: /
         backend:
-          serviceName: colorapp-frontend-service
+          serviceName: colorapp-frontend
           servicePort: 8000

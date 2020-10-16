@@ -61,5 +61,5 @@ function createChart(data) {
         duration: 750,
       },
     }
-  });  
+  });
 }

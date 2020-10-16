@@ -3,3 +3,4 @@ This applications displays a blank webpage with a color retrieved from the backe
 
 ## Deployment
 The manifests folder contains two k8s deployments, one for the frontend and one for the backend. It will deploy the frontend and backend app as deployments along with its associated services. In addition an ingress yaml is provided for nginx ingress controller, that has to be fitted according to the individual k8s cluster.
+After deploying the application you should see a blue website with a button that links to small chart that indicates the ratio between website with blue and green backgrounds.
