@@ -25,7 +25,7 @@ spec:
         - containerPort: 8000
         env:
           - name: backend_host
-            value: colorapp-backend-service
+            value: colorapp-backend
           - name: backend_port
             value: "8000"
 ---
@@ -41,19 +41,3 @@ spec:
     - protocol: TCP
       port: 8000
       targetPort: 8000
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: frontend-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-  - host: color-frontend.demofoo.134.176.27.253.nip.io
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: colorapp-frontend-service
-          servicePort: 8000

@@ -1,0 +1,17 @@
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: colorapp-backend-canary
+  namespace: colorapp
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: colorapp-backend
+  service:
+    port: 8000
+  analysis:
+    interval: 10s
+    threshold: 5
+    stepWeight: 10
+    maxWeight: 100

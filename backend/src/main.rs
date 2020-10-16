@@ -9,7 +9,7 @@ extern crate serde_json;
 #[macro_use] extern crate serde_derive;
 
 use rocket_contrib::json::{Json};
-
+use rocket::http::Status;
 
 // blue
 //const COLORCODE: &str = "blue";
@@ -24,9 +24,14 @@ struct Color {
 
 
 fn main() {
-    rocket::ignite().mount("/", routes![get_color]).launch();
+    rocket::ignite().mount("/", routes![get_color,get_healthz]).launch();
 }
 
+
+#[get("/healthz")]
+fn get_healthz() -> Status {
+    Status::Ok
+}
 
 /// Returns the defined color
 #[get("/color")]

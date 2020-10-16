@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: colorapp-backend-deployment
+  name: colorapp-backend
   labels:
     app.kubernetes.io/name: backend
     app.kubernetes.io/part-of: colorapp
     app.kubernetes.io/version: v1.0.0
 spec:
-  replicas: 1
+  replicas: 5
   selector:
     matchLabels:
       app: backend
@@ -27,7 +27,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: colorapp-backend-service
+  name: colorapp-backend
 spec:
   selector:
     app: backend
@@ -36,19 +36,3 @@ spec:
     - protocol: TCP
       port: 8000
       targetPort: 8000
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: backend-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-  - host: color-backend.demofoo.134.176.27.253.nip.io
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: colorapp-backend-service
-          servicePort: 8000
