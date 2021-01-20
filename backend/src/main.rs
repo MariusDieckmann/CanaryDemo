@@ -18,11 +18,7 @@ use rocket::State;
 
 use clap::Clap;
 
-// blue
 const COLORCODE: &str = "blue";
-
-// green
-//const COLORCODE:&str = "green";
 
 struct ApiKey(String);
 
@@ -64,15 +60,6 @@ fn main() -> std::io::Result<()> {
     return Ok(());
 }
 
-
-/// Returns the defined color
-//#[get("/color")]
-//fn get_color() -> Json<Color> {
-//    let color_code = Color{color: COLORCODE.to_string()};
-//
-//   Json(color_code)
-//}
-
 impl<'a, 'r> FromRequest<'a, 'r> for ApiKey {
     type Error = ApiKeyError;
 
@@ -92,9 +79,12 @@ fn is_valid(key: &str) -> bool {
     key == "valid_api_key"
 }
 
+// Returns the defined color
 #[get("/color")]
-fn get_color(key: ApiKey) -> Status {
-    Status::InternalServerError
+fn get_color() -> Json<Color> {
+    let color_code = Color{color: COLORCODE.to_string()};
+
+   Json(color_code)
 }
 
 #[get("/health")]
