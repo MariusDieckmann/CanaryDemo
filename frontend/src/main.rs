@@ -11,9 +11,12 @@ use std::collections::VecDeque;
 use rocket_contrib::json::{Json};
 use rocket_contrib::serve::StaticFiles;
 use rocket::State;
+use std::env;
+
 extern crate serde;
 extern crate serde_json;
 
+struct ApiKey(String);
 
 use std::thread;
 use std::time::{SystemTime, Duration, UNIX_EPOCH};
@@ -34,14 +37,18 @@ fn main() {
 
     let color_counter_wrapped_clone = color_counter_wrapped.clone();
 
-    let _handle = thread::spawn(move || {
-        read_stats(color_counter_wrapped_clone)
-    });
+    let api_key = "APIKey";
+    let api_key_value: ApiKey = ApiKey(env::var(api_key).expect("Could not read env var for secret key"));
+    let api_key_value2: ApiKey = ApiKey(env::var(api_key).expect("Could not read env var for secret key"));
 
+    let _handle = thread::spawn(move || {
+        read_stats(color_counter_wrapped_clone, api_key_value)
+    });
 
     let err = rocket::ignite()
     .attach(Template::fairing())
     .manage(color_counter_wrapped.clone())
+    .manage(api_key_value2)
     .mount("/static", StaticFiles::from("static"))
     .mount("/", routes![index, stats, stats_show])
     .launch();
@@ -52,7 +59,7 @@ fn main() {
 
 /// returns a blank site with the background color set to the color returned by the backend
 #[get("/")]
-fn index() -> Template {
+fn index(api_key: State<ApiKey>) -> Template {
     let backend_host = match std::env::var("backend_host") {
         Ok(resp) => resp,
         Err(e) => {
@@ -71,7 +78,9 @@ fn index() -> Template {
 
     let url = format!("http://{}:{}/color", backend_host, backend_port);
 
-    let resp = reqwest::blocking::get(&url).unwrap()
+    let client = reqwest::blocking::Client::new();
+
+    let resp = client.get(&url).header("x-api-key", &api_key.0).send().unwrap()
         .json::<HashMap<String, String>>().unwrap();
     return Template::render("base", &resp);
 }
@@ -99,7 +108,7 @@ fn stats_show() -> Template {
 /// A continues loop that reads the number of hits of green and blue responses from
 /// the backend. The result is stored in a queue. Only the most recent 100 hits are
 /// stored
-fn read_stats<'a>(color_counter_wrapper: Arc<Mutex<ColorCount>>) -> () {
+fn read_stats<'a>(color_counter_wrapper: Arc<Mutex<ColorCount>>, api_key: ApiKey) -> () {
     loop {
         let now = SystemTime::now();
         let time_since_epoch = now.duration_since(UNIX_EPOCH).expect("Failed to get time");
@@ -109,15 +118,13 @@ fn read_stats<'a>(color_counter_wrapper: Arc<Mutex<ColorCount>>) -> () {
 
         let backend_host = match std::env::var("backend_host") {
             Ok(resp) => resp,
-            Err(e) => {
-                println!("{}", e);
+            Err(_) => {
                 "localhost".to_string()
             },
         };
         let backend_port = match std::env::var("backend_port") {
             Ok(resp) => resp,
-            Err(e) => {
-                println!("{}", e);
+            Err(_) => {
                 "8001".to_string()
             },
         };
@@ -125,8 +132,11 @@ fn read_stats<'a>(color_counter_wrapper: Arc<Mutex<ColorCount>>) -> () {
     
         let url = format!("http://{}:{}/color", backend_host, backend_port);
 
+        let client = reqwest::blocking::Client::new();
+
         for _ in 0..100 {
-            let resp_result = reqwest::blocking::get(&url);
+            let resp_result = client.get(&url).header("x-api-key", &api_key.0).send();
+
             let resp = match resp_result {
                 Ok(resp) => resp,
                 Err(e) => {
