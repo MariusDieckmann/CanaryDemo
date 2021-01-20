@@ -5,24 +5,38 @@ metadata:
   labels:
     app.kubernetes.io/name: backend
     app.kubernetes.io/part-of: colorapp
-    app.kubernetes.io/version: v1.0.0
+    app.kubernetes.io/version: v2.0.0
 spec:
   replicas: 5
   selector:
     matchLabels:
       app: backend
-      version: v1.0.0
+      version: v2.0.0
   template:
     metadata:
       labels:
         app: backend
-        version: v1.0.0
+        version: v2.0.0
     spec:
       containers:
       - name: colorapp-backend
-        image: quay.io/mariusdieckmann/colorapp-backend:v1.0.0
+        image: quay.io/mariusdieckmann/colorapp-backend:v2.0.0
         ports:
-        - containerPort: 8000
+          - containerPort: 8000
+        volumeMounts:
+          - name: configvol
+            mountPath: "/config"
+            readOnly: true
+        env:
+          - name: APIKey
+            valueFrom:
+            secretKeyRef:
+              name: APISecret
+              key: APIKey
+      volumes:
+        - name: configvol
+          configMap:
+            name: canarydemo
 ---
 apiVersion: v1
 kind: Service
@@ -31,7 +45,7 @@ metadata:
 spec:
   selector:
     app: backend
-    version: v1.0.0
+    version: v2.0.0
   ports:
     - protocol: TCP
       port: 8000
