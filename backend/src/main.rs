@@ -10,7 +10,6 @@ extern crate serde_json;
 
 use std::{fs::File};
 
-use rocket_contrib::json::{Json};
 use rocket::request::{self, Request, FromRequest};
 use rocket::Outcome;
 use rocket::http::Status;
@@ -81,10 +80,8 @@ fn is_valid(key: &str) -> bool {
 
 // Returns the defined color
 #[get("/color")]
-fn get_color() -> Json<Color> {
-    let color_code = Color{color: COLORCODE.to_string()};
-
-   Json(color_code)
+fn get_color() -> Status {
+    Status::InternalServerError
 }
 
 #[get("/health")]
