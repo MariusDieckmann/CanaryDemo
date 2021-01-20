@@ -30,9 +30,9 @@ spec:
         env:
           - name: APIKey
             valueFrom:
-            secretKeyRef:
-              name: APISecret
-              key: APIKey
+              secretKeyRef:
+                name: APISecret
+                key: APIKey
       volumes:
         - name: configvol
           configMap:
