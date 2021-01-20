@@ -8,6 +8,7 @@ extern crate serde_json;
 // Import this crate to derive the Serialize and Deserialize traits.
 #[macro_use] extern crate serde_derive;
 
+use std::env;
 use std::{fs::File};
 
 use rocket_contrib::json::{Json};
@@ -53,8 +54,12 @@ fn main() -> std::io::Result<()> {
     let file = File::open(opts.config)?;
     let config: Config = serde_yaml::from_reader(file).expect("Could not parse config file");
     
-    println!("{}", config.should_fail);
-
+    let key = "APIKey";
+    match env::var(key) {
+        Ok(val) => println!("{}: {:?}", key, val),
+        Err(e) => println!("couldn't interpret {}: {}", key, e),
+    }
+    
     rocket::ignite().manage(config).mount("/", routes![get_color, get_health]).launch();
 
     return Ok(());
