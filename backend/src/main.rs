@@ -21,6 +21,7 @@ use clap::Clap;
 
 const COLORCODE: &str = "green";
 
+struct ApiKeyStruct(String);
 struct ApiKey(String);
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -54,25 +55,28 @@ fn main() -> std::io::Result<()> {
     let file = File::open(opts.config)?;
     let config: Config = serde_yaml::from_reader(file).expect("Could not parse config file");
     
-    let key = "APIKey";
-    match env::var(key) {
-        Ok(val) => println!("{}: {:?}", key, val),
-        Err(e) => println!("couldn't interpret {}: {}", key, e),
-    }
+    let api_key = "APIKey";
+    let api_key_value: ApiKey = ApiKey(env::var(api_key).expect("Could not read env var for secret key"));
     
-    rocket::ignite().manage(config).mount("/", routes![get_color, get_health]).launch();
+    rocket::ignite().manage(config).manage(api_key_value).mount("/", routes![get_color, get_health]).launch();
 
     return Ok(());
 }
 
-impl<'a, 'r> FromRequest<'a, 'r> for ApiKey {
+impl<'a, 'r> FromRequest<'a, 'r> for ApiKeyStruct {
     type Error = ApiKeyError;
 
     fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
+        let api_key = match request.guard::<State<ApiKey>>() {
+            Outcome::Failure(_) => return Outcome::Failure((Status::InternalServerError, ApiKeyError::BadCount)),
+            Outcome::Success(s) => s,
+            Outcome::Forward(_) => return Outcome::Failure((Status::InternalServerError, ApiKeyError::BadCount)),
+        };
+
         let keys: Vec<_> = request.headers().get("x-api-key").collect();
         match keys.len() {
             0 => Outcome::Failure((Status::BadRequest, ApiKeyError::Missing)),
-            1 if is_valid(keys[0]) => Outcome::Success(ApiKey(keys[0].to_string())),
+            1 if is_valid(keys[0], api_key) => Outcome::Success(ApiKeyStruct(keys[0].to_string())),
             1 => Outcome::Failure((Status::BadRequest, ApiKeyError::Invalid)),
             _ => Outcome::Failure((Status::BadRequest, ApiKeyError::BadCount)),
         }
@@ -80,13 +84,14 @@ impl<'a, 'r> FromRequest<'a, 'r> for ApiKey {
 }
 
 /// Returns true if `key` is a valid API key string.
-fn is_valid(key: &str) -> bool {
-    key == "valid_api_key"
+fn is_valid(key: &str, original_key: State<ApiKey>) -> bool {
+    key == original_key.0
 }
+
 
 // Returns the defined color
 #[get("/color")]
-fn get_color() -> Json<Color> {
+fn get_color(_api: ApiKeyStruct) -> Json<Color> {
     let color_code = Color{color: COLORCODE.to_string()};
 
    Json(color_code)
