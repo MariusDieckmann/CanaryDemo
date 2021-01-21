@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/part-of: colorapp
     app.kubernetes.io/version: v2.0.0
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -20,18 +20,31 @@ spec:
     spec:
       containers:
       - name: colorapp-backend
-        image: quay.io/mariusdieckmann/colorapp-backend:v2.0.0
+        #image: nginx
+        image: quay.io/mariusdieckmann/colorapp-backend:v2.0.12
+        imagePullPolicy: Always
         ports:
           - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3
         volumeMounts:
           - name: configvol
-            mountPath: "/config"
-            readOnly: true
+            mountPath: /config
         env:
           - name: APIKey
             valueFrom:
               secretKeyRef:
-                name: APISecret
+                name: apikey
                 key: APIKey
       volumes:
         - name: configvol

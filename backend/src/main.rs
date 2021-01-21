@@ -52,7 +52,11 @@ enum ApiKeyError {
 fn main() -> std::io::Result<()> {
     let opts: Opts = Opts::parse();
 
-    let file = File::open(opts.config)?;
+    let path = opts.config;
+
+    println!("Opening file: {}", path);
+
+    let file = File::open(path)?;
     let config: Config = serde_yaml::from_reader(file).expect("Could not parse config file");
     
     let api_key = "APIKey";

@@ -31,7 +31,7 @@ spec:
           - name: APIKey
             valueFrom:
               secretKeyRef:
-                name: APISecret
+                name: apikey
                 key: APIKey
 ---
 apiVersion: v1
