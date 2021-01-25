@@ -10,5 +10,8 @@
     <div>
         <a href="/stats/show" class="btn btn-primary btn-lg btn-block" role="button" aria-pressed="true">Show stats</button>
     </div>
+        <div>
+        <a href="/load" class="btn btn-primary btn-lg btn-block" role="button" aria-pressed="true">Generate load</button>
+    </div>
 </body>
 </html> 

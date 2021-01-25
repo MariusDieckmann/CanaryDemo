@@ -10,7 +10,8 @@ use std::collections::HashMap;
 use std::collections::VecDeque;
 use rocket_contrib::json::{Json};
 use rocket_contrib::serve::StaticFiles;
-use rocket::State;
+use rocket::{State, http::Status};
+use rocket::response::Redirect;
 use std::env;
 
 extern crate serde;
@@ -50,7 +51,7 @@ fn main() {
     .manage(color_counter_wrapped.clone())
     .manage(api_key_value2)
     .mount("/static", StaticFiles::from("static"))
-    .mount("/", routes![index, stats, stats_show])
+    .mount("/", routes![index, stats, stats_show, generate_load])
     .launch();
 
     println!("{:?}", err)
@@ -104,6 +105,31 @@ fn stats_show() -> Template {
     return Template::render("stats", foo)
 }
 
+#[get("/load")]   
+fn generate_load() -> Redirect {
+    let backend_host = match std::env::var("backend_host") {
+        Ok(resp) => resp,
+        Err(_) => {
+            "localhost".to_string()
+        },
+    };
+    let backend_port = match std::env::var("backend_port") {
+        Ok(resp) => resp,
+        Err(_) => {
+            "8001".to_string()
+        },
+    };
+
+    let url = format!("http://{}:{}/load", backend_host, backend_port);
+
+    thread::spawn(move ||{
+        reqwest::blocking::get(&url)
+    });
+
+
+    return Redirect::to(uri!(index))
+
+}
 
 /// A continues loop that reads the number of hits of green and blue responses from
 /// the backend. The result is stored in a queue. Only the most recent 100 hits are
