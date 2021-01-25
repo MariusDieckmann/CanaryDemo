@@ -96,8 +96,10 @@ fn is_valid(key: &str, original_key: State<ApiKey>) -> bool {
 
 // Returns the defined color
 #[get("/color")]
-fn get_color(_api: ApiKeyStruct) -> Status {
-    return Status::InternalServerError
+fn get_color(_api: ApiKeyStruct) -> Json<Color> {
+    let color_code = Color{color: COLORCODE.to_string()};
+
+   Json(color_code)
 }
 
 #[get("/health")]
