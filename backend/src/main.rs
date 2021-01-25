@@ -10,6 +10,7 @@ extern crate serde_json;
 
 use std::env;
 use std::{fs::File};
+use std::thread;
 
 use rocket_contrib::json::{Json};
 use rocket::request::{self, Request, FromRequest};
@@ -62,7 +63,7 @@ fn main() -> std::io::Result<()> {
     let api_key = "APIKey";
     let api_key_value: ApiKey = ApiKey(env::var(api_key).expect("Could not read env var for secret key"));
     
-    rocket::ignite().manage(config).manage(api_key_value).mount("/", routes![get_color, get_health]).launch();
+    rocket::ignite().manage(config).manage(api_key_value).mount("/", routes![get_color, get_health, get_load]).launch();
 
     return Ok(());
 }
@@ -106,6 +107,20 @@ fn get_health(config: State<Config>) -> Status {
     if config.should_fail {
         return Status::InternalServerError
     };
+
+    return Status::Ok
+}
+
+#[get("/load")]
+fn get_load() -> Status {
+    
+    thread::spawn(||{
+        let mut i: i64 = 0;
+
+        for _ in 0..1000000000 {
+            i = i + 1;
+        }
+    });
 
     return Status::Ok
 }
