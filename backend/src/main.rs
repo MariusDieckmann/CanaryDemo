@@ -20,7 +20,7 @@ use rocket::State;
 
 use clap::Clap;
 
-const COLORCODE: &str = "green";
+const COLORCODE: &str = "blue";
 
 struct ApiKeyStruct(String);
 struct ApiKey(String);
