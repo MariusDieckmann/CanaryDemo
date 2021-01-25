@@ -1,5 +1,5 @@
 # Color application
-This applications displays a blank webpage with a color retrieved from the backend. It can also display the number of times a certain color is shown. This application is designed to showcase two different deployment strategies: blue-green deployments and canary deployments. The app is written in Rustlang because the author wanted to take a look at it.
+This applications displays a webpage with a background color retrieved from the backend. It can also display the number of times a certain color is shown. This application is designed to showcase canary deployments. The app is written in Rustlang because the author wanted to take a look at it.
 
 ## Deployment
 The deployment has to separate components, a frontend components and a backend component. The frontend has a simple website that displays a single color. The color is determined by a call to the backend that returns the displayed color in a short JSON message. Both the frontend and the backend listen by default on port 8000. The frontend can also the ratio of backend color results, which can be used to visualize deployment updates and the behavour of successding and failing canary deployments.
