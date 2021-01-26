@@ -113,12 +113,22 @@ fn get_health(config: State<Config>) -> Status {
 fn get_load() -> Status {
     
     thread::spawn(||{
-        let mut i: i64 = 0;
+        let mut primes:Vec<i64> = Vec::new();
 
-        for _ in 0..1000000000 {
-            i = i + 1;
+        for i in 2i64..100000 {
+            let mut is_prime = true;
+            for j in 2..i-1 {
+                if i%j == 0 {
+                    is_prime = false;
+                }
+            }
+
+            if is_prime {
+                primes.push(i);
+            }
         }
     });
+
 
     return Status::Ok
 }
