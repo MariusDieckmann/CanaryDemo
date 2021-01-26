@@ -21,7 +21,7 @@ spec:
       containers:
       - name: colorapp-backend
         #image: nginx
-        image: quay.io/mariusdieckmann/colorapp-backend:v2.0.12
+        image: quay.io/mariusdieckmann/colorapp-backend:v2.0.22
         imagePullPolicy: Always
         ports:
           - containerPort: 8000
