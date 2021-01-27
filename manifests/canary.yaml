@@ -2,7 +2,7 @@ apiVersion: flagger.app/v1beta1
 kind: Canary
 metadata:
   name: colorapp-backend-canary
-  namespace: colorapp
+  namespace: default
 spec:
   targetRef:
     apiVersion: apps/v1
@@ -15,3 +15,8 @@ spec:
     threshold: 5
     stepWeight: 10
     maxWeight: 100
+    metrics:
+    - name: request-success-rate
+      thresholdRange:
+        min: 99
+      interval: 10s
