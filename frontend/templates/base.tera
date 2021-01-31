@@ -16,7 +16,7 @@
     </div>
     {% elif generate_load == "true" %}
     <div>
-        <a href="/load/stop" class="btn btn-primary btn-lg btn-block" role="button" aria-pressed="true">Stop generating Load</button>
+        <a href="/load/stop" class="btn btn-primary btn-lg btn-block" role="button" aria-pressed="true">Stop generating load</button>
     </div>
     {% endif %}
 </body>
