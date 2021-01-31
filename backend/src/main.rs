@@ -8,9 +8,11 @@ extern crate serde_json;
 // Import this crate to derive the Serialize and Deserialize traits.
 #[macro_use] extern crate serde_derive;
 
-use std::env;
+use std::{env, time::Duration};
 use std::{fs::File};
 use std::thread;
+
+use std::path::Path;
 
 use rocket_contrib::json::{Json};
 use rocket::request::{self, Request, FromRequest};
@@ -53,17 +55,25 @@ enum ApiKeyError {
 fn main() -> std::io::Result<()> {
     let opts: Opts = Opts::parse();
 
-    let path = opts.config;
+    let path_string = opts.config;
 
-    println!("Opening file: {}", path);
+    println!("Opening file: {}", path_string);
 
-    let file = File::open(path)?;
-    let config: Config = serde_yaml::from_reader(file).expect("Could not parse config file");
+    let path = Path::new(&path_string);
+
+    let mut config = Config{
+        should_fail: false,
+    };
+
+    if path.is_file() {
+        let file = File::open(path)?;
+        config = serde_yaml::from_reader(file).expect("Could not parse config file");
+    }
     
     let api_key = "APIKey";
     let api_key_value: ApiKey = ApiKey(env::var(api_key).expect("Could not read env var for secret key"));
     
-    rocket::ignite().manage(config).manage(api_key_value).mount("/", routes![get_color, get_health, get_load]).launch();
+    rocket::ignite().manage(config).manage(api_key_value).mount("/", routes![get_color, get_health_live, get_health_startup, get_load]).launch();
 
     return Ok(());
 }
@@ -102,11 +112,18 @@ fn get_color(_api: ApiKeyStruct) -> Json<Color> {
    Json(color_code)
 }
 
-#[get("/health")]
-fn get_health(config: State<Config>) -> Status {
+#[get("/health/live")]
+fn get_health_live(config: State<Config>) -> Status {
     if config.should_fail {
         return Status::InternalServerError
     };
+
+    return Status::Ok
+}
+
+#[get("/health/startup")]
+fn get_health_startup() -> Status {
+    thread::sleep(Duration::new(5, 0));
 
     return Status::Ok
 }
@@ -117,7 +134,7 @@ fn get_load() -> Status {
     thread::spawn(||{
         let mut primes:Vec<i64> = Vec::new();
 
-        for i in 2i64..100000 {
+        for i in 2i64..1000 {
             let mut is_prime = true;
             for j in 2..i-1 {
                 if i%j == 0 {
