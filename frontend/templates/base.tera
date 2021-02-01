@@ -10,8 +10,14 @@
     <div>
         <a href="/stats/show" class="btn btn-primary btn-lg btn-block" role="button" aria-pressed="true">Show stats</button>
     </div>
-        <div>
-        <a href="/load" class="btn btn-primary btn-lg btn-block" role="button" aria-pressed="true">Generate load</button>
+    {% if generate_load == "false" %}
+    <div>
+        <a href="/load/start" class="btn btn-primary btn-lg btn-block" role="button" aria-pressed="true">Start generating load</button>
     </div>
+    {% elif generate_load == "true" %}
+    <div>
+        <a href="/load/stop" class="btn btn-primary btn-lg btn-block" role="button" aria-pressed="true">Stop generating load</button>
+    </div>
+    {% endif %}
 </body>
 </html> 

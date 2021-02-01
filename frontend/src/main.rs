@@ -4,7 +4,7 @@
 #[macro_use] extern crate serde_derive;
 
 
-use std::sync::{Arc, Mutex};    
+use std::{borrow::Borrow, convert::TryInto, sync::{Arc, Mutex, RwLock}};    
 use rocket_contrib::templates::Template;
 use std::collections::HashMap;
 use std::collections::VecDeque;
@@ -25,7 +25,6 @@ use std::time::{SystemTime, Duration, UNIX_EPOCH};
 const BLUESTRING: &str = "blue";
 const GREENSTRING: &str = "green";
 
-
 fn main() {
     let color_counter = ColorCount {
         blue: VecDeque::new(),
@@ -42,6 +41,8 @@ fn main() {
     let api_key_value: ApiKey = ApiKey(env::var(api_key).expect("Could not read env var for secret key"));
     let api_key_value2: ApiKey = ApiKey(env::var(api_key).expect("Could not read env var for secret key"));
 
+    let load_generator = LoadGenerator::new();
+
     let _handle = thread::spawn(move || {
         read_stats(color_counter_wrapped_clone, api_key_value)
     });
@@ -50,8 +51,9 @@ fn main() {
     .attach(Template::fairing())
     .manage(color_counter_wrapped.clone())
     .manage(api_key_value2)
+    .manage(load_generator)
     .mount("/static", StaticFiles::from("static"))
-    .mount("/", routes![index, stats, stats_show, generate_load])
+    .mount("/", routes![index, stats, stats_show, start_generate_load, stop_generate_load])
     .launch();
 
     println!("{:?}", err)
@@ -60,7 +62,7 @@ fn main() {
 
 /// returns a blank site with the background color set to the color returned by the backend
 #[get("/")]
-fn index(api_key: State<ApiKey>) -> Template {
+fn index(api_key: State<ApiKey>, load_generator: State<Arc<LoadGenerator>>) -> Template {
     let backend_host = match std::env::var("backend_host") {
         Ok(resp) => resp,
         Err(e) => {
@@ -81,8 +83,17 @@ fn index(api_key: State<ApiKey>) -> Template {
 
     let client = reqwest::blocking::Client::new();
 
-    let resp = client.get(&url).header("x-api-key", &api_key.0).send().unwrap()
+    let mut resp = client.get(&url).header("x-api-key", &api_key.0).send().unwrap()
         .json::<HashMap<String, String>>().unwrap();
+
+
+    let load_status = &load_generator.generate_load.read().unwrap();
+
+    resp.insert("generate_load".to_string(), std::format!("{}", load_status));
+
+
+    println!("{:?}", resp);
+
     return Template::render("base", &resp);
 }
 
@@ -101,35 +112,26 @@ fn stats(color_count: State<Arc<Mutex<ColorCount>>>) -> Json<ColorCount> {
 /// as read from the read_stats method
 #[get("/stats/show")]   
 fn stats_show() -> Template {
-    let foo: HashMap<String, String> = HashMap::new();
-    return Template::render("stats", foo)
+    let context: HashMap<String, String> = HashMap::new();
+    return Template::render("stats", context)
 }
 
-#[get("/load")]   
-fn generate_load() -> Redirect {
-    let backend_host = match std::env::var("backend_host") {
-        Ok(resp) => resp,
-        Err(_) => {
-            "localhost".to_string()
-        },
-    };
-    let backend_port = match std::env::var("backend_port") {
-        Ok(resp) => resp,
-        Err(_) => {
-            "8001".to_string()
-        },
-    };
 
-    let url = format!("http://{}:{}/load", backend_host, backend_port);
-
-    thread::spawn(move ||{
-        reqwest::blocking::get(&url)
-    });
-
+#[get("/load/start")]   
+fn start_generate_load(load_generator: State<Arc<LoadGenerator>>) -> Redirect {
+    load_generator.start_generate_load();
 
     return Redirect::to(uri!(index))
-
 }
+
+#[get("/load/stop")]   
+fn stop_generate_load(load_generator: State<Arc<LoadGenerator>>) -> Redirect {
+    load_generator.end_generate_load();
+
+    return Redirect::to(uri!(index))
+}
+
+
 
 /// A continues loop that reads the number of hits of green and blue responses from
 /// the backend. The result is stored in a queue. Only the most recent 100 hits are
@@ -230,5 +232,77 @@ struct ColorCount {
 impl ColorCount {
     fn get_stats (&self) -> Json<ColorCount> {
         return Json(self.clone())
+    }
+}
+
+struct LoadGenerator {
+    generate_load: RwLock<bool>
+}
+
+impl LoadGenerator {
+    fn new() -> Arc<LoadGenerator> {
+
+        let load_generator = Arc::new(LoadGenerator{
+            generate_load: RwLock::new(false)
+        });
+
+        let backend_host = match std::env::var("backend_host") {
+            Ok(resp) => resp,
+            Err(_) => {
+                "localhost".to_string()
+            },
+        };
+        let backend_port = match std::env::var("backend_port") {
+            Ok(resp) => resp,
+            Err(_) => {
+                "8001".to_string()
+            },
+        };
+
+        let url = format!("http://{}:{}/load", backend_host, backend_port);
+
+        let load_generator_1 = load_generator.clone();
+
+        thread::spawn(move || {
+            loop {
+                match *load_generator_1.generate_load.read().unwrap() {
+                    true => {
+                        match reqwest::blocking::get(&url) {
+                            Ok(_) => {},
+                            Err(_) => {},
+                        }
+                        thread::sleep(Duration::new(0, 500000))
+                    },
+                    false => {
+                        thread::sleep(Duration::new(1, 0))
+                    }
+                }
+            }
+        });
+
+        return load_generator
+    }
+
+    /// Starts load generation
+    fn start_generate_load(&self) {
+        *self.generate_load.write().unwrap() = true;
+    }
+ 
+    /// Ends load generation
+    fn end_generate_load(&self) {
+        *self.generate_load.write().unwrap() = false
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::LoadGenerator;
+
+    #[test]
+    fn load_generator_test() {
+        let load_generator = LoadGenerator::new();
+
+        load_generator.start_generate_load()
+
     }
 }
