@@ -7,13 +7,15 @@ metadata:
     app.kubernetes.io/part-of: colorapp
     app.kubernetes.io/version: v2.0.0
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: backend
       version: v2.0.0
   template:
     metadata:
+      annotations:
+        linkerd.io/inject: enabled
       labels:
         app: backend
         version: v2.0.0
@@ -23,6 +25,13 @@ spec:
         #image: nginx
         image: quay.io/mariusdieckmann/colorapp-backend:v2.0.22
         imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "1000m"
+          limits:
+            memory: "256Mi"
+            cpu: "1000m"
         ports:
           - containerPort: 8000
         livenessProbe:
