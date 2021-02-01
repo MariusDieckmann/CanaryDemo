@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: colorapp-frontend
-        image: quay.io/mariusdieckmann/colorapp-frontend:v2.0.3
+        image: quay.io/mariusdieckmann/colorapp-frontend:v2.0.5
         ports:
         - containerPort: 8000
         env:

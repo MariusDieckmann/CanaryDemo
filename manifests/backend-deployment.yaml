@@ -17,15 +17,15 @@ spec:
       containers:
       - name: colorapp-backend
         #image: nginx
-        image: quay.io/mariusdieckmann/colorapp-backend:v2.0.22
+        image: quay.io/mariusdieckmann/colorapp-backend:v2.0.23
         imagePullPolicy: Always
         resources:
           requests:
             memory: "256Mi"
-            cpu: "1000m"
+            cpu: "300m"
           limits:
             memory: "256Mi"
-            cpu: "1000m"
+            cpu: "300m"
         ports:
           - containerPort: 8000
         livenessProbe:
