@@ -3,22 +3,16 @@ kind: Deployment
 metadata:
   name: colorapp-backend
   labels:
-    app.kubernetes.io/name: backend
-    app.kubernetes.io/part-of: colorapp
-    app.kubernetes.io/version: v2.0.0
+    app: backend
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: backend
-      version: v2.0.0
   template:
     metadata:
-      annotations:
-        linkerd.io/inject: enabled
       labels:
         app: backend
-        version: v2.0.0
     spec:
       containers:
       - name: colorapp-backend
@@ -67,7 +61,6 @@ metadata:
 spec:
   selector:
     app: backend
-    version: v2.0.0
   ports:
     - protocol: TCP
       port: 8000
