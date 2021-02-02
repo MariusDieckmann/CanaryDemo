@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/part-of: colorapp
     app.kubernetes.io/version: v2.0.0
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
