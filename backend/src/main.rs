@@ -8,7 +8,7 @@ extern crate serde_json;
 // Import this crate to derive the Serialize and Deserialize traits.
 #[macro_use] extern crate serde_derive;
 
-use std::{env, time::Duration};
+use std::{env, time::{Instant, SystemTime}};
 use std::{fs::File};
 use std::thread;
 
@@ -20,9 +20,11 @@ use rocket::Outcome;
 use rocket::http::Status;
 use rocket::State;
 
+
+
 use clap::Clap;
 
-const COLORCODE: &str = "green";
+const COLORCODE: &str = "blue";
 
 struct ApiKeyStruct(String);
 struct ApiKey(String);
@@ -70,10 +72,14 @@ fn main() -> std::io::Result<()> {
         config = serde_yaml::from_reader(file).expect("Could not parse config file");
     }
     
+    let start_time = StartTime{
+        time_started: Instant::now(),
+    };
+
     let api_key = "APIKey";
     let api_key_value: ApiKey = ApiKey(env::var(api_key).expect("Could not read env var for secret key"));
     
-    rocket::ignite().manage(config).manage(api_key_value).mount("/", routes![get_color, get_health_live, get_health_startup, get_load]).launch();
+    rocket::ignite().manage(config).manage(start_time).manage(api_key_value).mount("/", routes![get_color, get_health_live, get_health_startup, get_load]).launch();
 
     return Ok(());
 }
@@ -122,8 +128,12 @@ fn get_health_live(config: State<Config>) -> Status {
 }
 
 #[get("/health/startup")]
-fn get_health_startup() -> Status {
-    thread::sleep(Duration::new(5, 0));
+fn get_health_startup(start_time: State<StartTime>) -> Status {
+    let duration = start_time.time_started.elapsed();
+
+    if duration.as_secs() < 5 {
+        return Status::ServiceUnavailable
+    }
 
     return Status::Ok
 }
@@ -148,6 +158,9 @@ fn get_load() -> Status {
         }
     });
 
-
     return Status::Ok
+}
+
+struct StartTime {
+    time_started: Instant,
 }
