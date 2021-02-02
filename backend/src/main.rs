@@ -132,7 +132,7 @@ fn get_health_startup(start_time: State<StartTime>) -> Status {
     let duration = start_time.time_started.elapsed();
 
     if duration.as_secs() < 5 {
-        return Status::BadRequest
+        return Status::ServiceUnavailable
     }
 
     return Status::Ok
