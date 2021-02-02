@@ -24,7 +24,7 @@ use rocket::State;
 
 use clap::Clap;
 
-const COLORCODE: &str = "blue";
+const COLORCODE: &str = "green";
 
 struct ApiKeyStruct(String);
 struct ApiKey(String);
@@ -37,6 +37,7 @@ struct Color {
 #[derive(Serialize, Deserialize, Debug)]
 struct Config {
     should_fail: bool,
+    load_iterations: i64,
 }
 
 #[derive(Clap)]
@@ -65,6 +66,7 @@ fn main() -> std::io::Result<()> {
 
     let mut config = Config{
         should_fail: false,
+        load_iterations: 10000
     };
 
     if path.is_file() {
@@ -137,12 +139,14 @@ fn get_health_startup(start_time: State<StartTime>) -> Status {
 }
 
 #[get("/load")]
-fn get_load() -> Status {
+fn get_load(conf: State<Config>) -> Status {
     
-    thread::spawn(||{
+    let load_iterations = conf.load_iterations;
+
+    thread::spawn(move ||{
         let mut primes:Vec<i64> = Vec::new();
 
-        for i in 2i64..1000 {
+        for i in 2i64..load_iterations {
             let mut is_prime = true;
             for j in 2..i-1 {
                 if i%j == 0 {

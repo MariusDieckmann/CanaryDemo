@@ -1,1 +1,2 @@
 should_fail: false
+load_iterations: 10000
