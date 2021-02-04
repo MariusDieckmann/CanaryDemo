@@ -8,6 +8,3 @@
 3. Install flagger for canary releases https://linkerd.io/2/tasks/canary-release/
 4. Try updating from 2.0 -> 2.1 and observe the behaviour
 5. Try updating from 2.1 -> 2.2 and observe the behaviour
-6. ```[Optional]``` Install keel https://github.com/keel-hq/keel and use the auto update function 
-    1. Non-canary scenario
-    2. Canary scenario
