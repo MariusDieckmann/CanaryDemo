@@ -1,6 +1,4 @@
 # Task 1
-## Introduction
-This task will introduce 
 
 ## Prepare VM
 Follow instructions: https://tsi-ccdoc.readthedocs.io/en/master/ResOps/2019/Minikube-and-NGINX-Practical-2019.html#exercise-0-0-starting-minikube
@@ -16,7 +14,9 @@ Follow instructions: https://tsi-ccdoc.readthedocs.io/en/master/ResOps/2019/Mini
 - Local machine: add ingress hostname to localhost alias ```/etc/hosts```  
 - VM: add colorapp to ingress ip in ```/etc/hosts```
 
+
 ## Task description
+0. Solutions acn be found in the manifests/ folder try not to use them
 1. Fork the repository
 2. ```[Optional]``` Create automated builds in quay.io or hub.docker.com
 3. Create manifests to deploy the canary demo
