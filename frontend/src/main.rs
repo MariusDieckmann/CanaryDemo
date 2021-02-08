@@ -4,13 +4,13 @@
 #[macro_use] extern crate serde_derive;
 
 
-use std::{borrow::Borrow, convert::TryInto, sync::{Arc, Mutex, RwLock}};    
+use std::{sync::{Arc, Mutex, RwLock}};    
 use rocket_contrib::templates::Template;
 use std::collections::HashMap;
 use std::collections::VecDeque;
 use rocket_contrib::json::{Json};
 use rocket_contrib::serve::StaticFiles;
-use rocket::{State, http::Status};
+use rocket::{State};
 use rocket::response::Redirect;
 use std::env;
 

@@ -8,7 +8,7 @@ extern crate serde_json;
 // Import this crate to derive the Serialize and Deserialize traits.
 #[macro_use] extern crate serde_derive;
 
-use std::{env, time::{Instant, SystemTime}};
+use std::{env, time::{Instant}};
 use std::{fs::File};
 use std::thread;
 
