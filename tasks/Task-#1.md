@@ -17,10 +17,9 @@ Basic instructions: https://tsi-ccdoc.readthedocs.io/en/master/ResOps/2019/Minik
 
 ## Task description
 0. Solutions can be found in the manifests/ folder try not to use them
-1. Fork the repository
-2. ```[Optional]``` Create automated builds in quay.io or hub.docker.com
-    - Prepared builds frontend: ```quay.io/mariusdieckmann/colorapp-frontend```
-    - Prepared builds frontend: ```quay.io/mariusdieckmann/colorapp-backend```
+1. Deploy the application described in this repo:
+    - Backend image: quay.io/mariusdieckmann/colorapp-backend
+    - Frontend image: quay.io/mariusdieckmann/colorapp-frontend
 3. Create manifests to deploy the canary demo
     1. Secret
         - Needs to be mounted as ```APIKey``` env var

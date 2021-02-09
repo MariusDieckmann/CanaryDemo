@@ -1,12 +1,6 @@
 # Color application
 This applications displays a webpage with a background color retrieved from the backend. It can also display the number of times a certain color is shown. This application is designed to showcase canary deployments and some other advanced Kubernetes Deployment techniques like heath checks and HPA. The app is written in Rustlang because the author wanted to take a look at it.
 
-
-# !!!IMPORTANT!!!
-Due to changes in the build process and general housekeeping, please refer to the https://github.com/CanaryDemo organization for the current version of this hands-on.
-
-
-
 ## Deployment
 The deployment has two separate components, a frontend components and a backend component. The frontend has a simple website that displays a single color. The color is determined by a call to the backend that returns the displayed color in a short JSON message. Both the frontend and the backend listen by default on port 8000. The frontend can also the ratio of backend color results, which can be used to visualize deployment updates and the behavour of successding and failing canary deployments.
 
