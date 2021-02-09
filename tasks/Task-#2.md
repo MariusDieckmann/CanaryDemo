@@ -9,3 +9,6 @@
 3. Install flagger for canary releases https://linkerd.io/2/tasks/canary-release/
 4. Try updating from 2.0 -> 2.1 and observe the behaviour
 5. Try updating from 2.1 -> 2.2 and observe the behaviour
+6. Delete and redeploy
+    - Use HPA along with Canary to automatically scale the canary deployment
+    - Scaling takes time, to see the results set appropriate timings
