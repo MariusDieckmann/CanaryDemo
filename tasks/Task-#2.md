@@ -12,3 +12,5 @@
 6. Delete and redeploy
     - Use HPA along with Canary to automatically scale the canary deployment
     - Scaling takes time, to see the results set appropriate timings
+7. ```[Optional]``` Extra tasks
+    - Connect ingress to linkerd: https://linkerd.io/2/tasks/using-ingress/
