@@ -18,6 +18,8 @@ Each branch represents a separate version of the canary demo. The version 1.0 wi
 ## Variables
 Frontend: 
     - ```APIKey```: Secret key that added for authentication, shared with the backend, should be the same secret
+    - ```backend_host```: Servicename of the backend service
+    - ```backend_port```: Service port of the backend service
 Backend: 
     - ```APIKey```: Secret key that added for authentication, shared with the frontend, should be the same secret
 
