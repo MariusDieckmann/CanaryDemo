@@ -3,6 +3,7 @@
 
 ## Task description
 1. Install linkerd https://linkerd.io/ CLI and install it into the cluster.
+    - https://linkerd.io/2/getting-started/
 2. Checkout interface ```linkerd dashboard &```
     1. Use ssh to port-forward the website with port 50750
 3. Install flagger for canary releases https://linkerd.io/2/tasks/canary-release/

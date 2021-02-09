@@ -31,7 +31,8 @@ Basic instructions: https://tsi-ccdoc.readthedocs.io/en/master/ResOps/2019/Minik
 4. Add well known labels to Deployment
 5. Test it
 6. Add appropriate requests and limits
-    1. Test behaviour
+    1. Test behaviour (htop/kubectl get <pod, deployment, ...>)
 7. Add HPA to backend with 30% CPU usage target
+    - HPA documentation: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/#create-horizontal-pod-autoscaler
 8. Create load and observe scaling
 9. Configure nginx ingress to use sticky session and test it with the frontend
