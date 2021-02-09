@@ -15,6 +15,12 @@ The backend has an additional health endpoint under /health that can be used for
 ## Version Branches
 Each branch represents a separate version of the canary demo. The version 1.0 will display a simple website green website, v1.1 will cause a 500 range error and v1.2 will result in  a blue website. This is only used to demonstrate and test canary deployments.
 
+## Variables
+Frontend: 
+    - ```APIKey```: Secret key that added for authentication, shared with the backend, should be the same secret
+Backend: 
+    - ```APIKey```: Secret key that added for authentication, shared with the frontend, should be the same secret
+
 ## APIs
 Both APIs listen on port ```8000```. The default port can be changed with the ```ROCKET_PORT``` environment variable. 
 
